@@ -57,13 +57,11 @@ public class Function implements AcceptTypeScriptData {
                 data.stringBuilder.append("/** @renamed-from ").append(renamedFrom).append(" */");
             }
         }
-        if(isPrivate) {
-            data.stringBuilder.append("private ");
-        } else if (isProtected) {
-            data.stringBuilder.append("protected ");
-        }
         if(isStatic) {
             data.stringBuilder.append("static ");
+        }
+        if(isPrivate || isProtected) {
+            data.stringBuilder.append("#");
         }
         if(data.accessingOriginalName) {
             data.stringBuilder.append(renamedFrom);

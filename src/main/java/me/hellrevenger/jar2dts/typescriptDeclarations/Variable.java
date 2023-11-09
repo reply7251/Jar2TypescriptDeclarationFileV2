@@ -36,11 +36,6 @@ public class Variable implements AcceptTypeScriptData {
                     data.stringBuilder.append("/** @renamed-from ").append(renamedFrom).append(" */");
                 }
             }
-            if(isPrivate) {
-                data.stringBuilder.append("private ");
-            } else if(isProtected) {
-                data.stringBuilder.append("protected ");
-            }
 
             if(isStatic) {
                 data.stringBuilder.append("static ");
@@ -49,6 +44,9 @@ public class Variable implements AcceptTypeScriptData {
                 data.stringBuilder.append("readonly ");
             } else if(isStatic) {
                 //data.stringBuilder.append("var ");
+            }
+            if(isPrivate || isProtected) {
+                data.stringBuilder.append("#");
             }
         } else {
             renamedFrom = name;
