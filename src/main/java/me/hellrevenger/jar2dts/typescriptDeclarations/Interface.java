@@ -96,9 +96,9 @@ public class Interface implements AcceptTypeScriptData {
     public void handleInstancePost(TypeScriptData data) {
 
         data.decreaseIndent().appendIndent().append("}\n");
-        data.appendIndent().append("type ").append(name);
+        data.appendIndent().append("interface ").append(name);
         handleGenerics(data);
-        data.stringBuilder.append(" = CombineTypes<[");
+        data.stringBuilder.append(" extends CombineTypes<[");
 
         var types = new HashSet<String>();
         //types.add("_" + name + getGenerics());
@@ -109,7 +109,7 @@ public class Interface implements AcceptTypeScriptData {
         typesWithSelf.addAll(types);
         data.stringBuilder.append(String.join(", ", typesWithSelf));
 
-        data.stringBuilder.append("]>;\n");
+        data.stringBuilder.append("]> {}\n");
     }
 
     public void handleInstanceIn(TypeScriptData data) {
