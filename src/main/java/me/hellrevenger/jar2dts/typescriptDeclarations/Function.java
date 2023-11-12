@@ -61,7 +61,7 @@ public class Function implements AcceptTypeScriptData {
             data.stringBuilder.append("static ");
         }
         if(isPrivate || isProtected) {
-            data.stringBuilder.append("#");
+            data.stringBuilder.append("_");
         }
         if(data.accessingOriginalName) {
             data.stringBuilder.append(renamedFrom);

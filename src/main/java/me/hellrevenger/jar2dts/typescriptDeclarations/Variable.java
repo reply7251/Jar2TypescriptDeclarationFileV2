@@ -46,7 +46,7 @@ public class Variable implements AcceptTypeScriptData {
                 //data.stringBuilder.append("var ");
             }
             if(isPrivate || isProtected) {
-                data.stringBuilder.append("#");
+                data.stringBuilder.append("_");
             }
         } else {
             renamedFrom = name;
