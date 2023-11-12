@@ -9,7 +9,16 @@ public class ClassName {
     static HashMap<String, String> remapMap2 = new HashMap<>();
     static HashMap<String, String> remapMap3 = new HashMap<>();
     public static String remap(String s) {
-        s = s.replace("/",".").replace("$",".");
+        s = s.replace("/",".");//.replace("$",".");
+        return _remap(s);
+    }
+
+    public static String remapForNamespace(String s) {
+        s = s.replace("/",".").replace("$",".__");
+        return _remap(s);
+    }
+
+    static String _remap(String s) {
         for(var entry : remapMap.entrySet()) {
             if(s.contains(entry.getKey())) {
                 s = s.replaceAll(entry.getKey(), entry.getValue());

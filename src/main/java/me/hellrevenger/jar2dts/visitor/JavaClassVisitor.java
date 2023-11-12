@@ -106,10 +106,7 @@ public class JavaClassVisitor extends ClassVisitor {
 
         var originalName = name;
         var methodName = TypeScriptData.INSTANCE.mapping.map(lastAccessClassName, name);
-        if(lastAccessClassNameSimple.equals("WorldSelectionList") && false) {
-            System.out.println("test: " + lastAccessClassName +"->" + TypeScriptData.INSTANCE.mapping.classes.get(lastAccessClassName));
-            System.out.println("test: " + originalName + "->" + methodName);
-        }
+
 
         if (methodName.equals("constructor")){
             methodName = "_" + methodName;
@@ -141,7 +138,7 @@ public class JavaClassVisitor extends ClassVisitor {
         String location = TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; //"Packages." +
         var clazz = TypeScriptData.INSTANCE.getNamespace(location).getInterface(lastAccessClassNameSimple);
 
-        var methodName = "constructor";
+        var methodName = "new";
         /*
         if ((access & Opcodes.ACC_PRIVATE) != 0){
             methodName = "_" + methodName;
@@ -184,7 +181,7 @@ public class JavaClassVisitor extends ClassVisitor {
         lastAccessPackage = lastAccessClassName.substring(0,lastAccessClassName.contains(".") ? lastAccessClassName.lastIndexOf(".") : 0);
 
         if(lastAccessClassNameSimple.isEmpty() || (access & (Opcodes.ACC_SYNTHETIC)) != 0
-                || lastAccessClassNameSimple.replaceAll("\\d","").isEmpty()) {
+                || !lastAccessClassNameSimple.replaceAll("\\$\\d","").equals(lastAccessClassNameSimple)) {
             super.visit(version, access, name, signature, superName, interfaces);
             unnecessary = true;
             return;

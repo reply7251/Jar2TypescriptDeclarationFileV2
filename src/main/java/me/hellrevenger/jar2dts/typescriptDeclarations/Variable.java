@@ -38,7 +38,7 @@ public class Variable implements AcceptTypeScriptData {
             }
 
             if(isStatic) {
-                data.stringBuilder.append("static ");
+                //data.stringBuilder.append("static ");
             }
             if(isReadonly) {
                 data.stringBuilder.append("readonly ");

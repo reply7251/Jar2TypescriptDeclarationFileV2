@@ -31,7 +31,7 @@ public class Namespace implements AcceptTypeScriptData {
         if(data.indent == 0) {
             data.stringBuilder.append("declare ");
         } else {
-            data.stringBuilder.append("export ");
+            //data.stringBuilder.append("export ");
         }
         data.stringBuilder.append("namespace ");
         data.stringBuilder.append(name);
@@ -84,7 +84,7 @@ public class Namespace implements AcceptTypeScriptData {
     }
 
     public Namespace getNamespace(String name) {
-        String finalName = name.replace("$",".");
+        String finalName = name;
         if(finalName.contains(".")) {
             int i = finalName.indexOf(".");
             return namespaces.getOrCreate(finalName.substring(0, i), () -> new Namespace(finalName.substring(0, i))).getNamespace(name.substring(i+1));
@@ -93,7 +93,7 @@ public class Namespace implements AcceptTypeScriptData {
     }
 
     public Interface getInterface(String name) {
-        String finalName = name.replace("$",".");
+        String finalName = name;
         if(finalName.contains(".")) {
             int i = finalName.indexOf(".");
             return namespaces.getOrCreate(finalName.substring(0, i), () -> new Namespace(finalName.substring(0, i))).getInterface(name.substring(i+1));
@@ -102,7 +102,7 @@ public class Namespace implements AcceptTypeScriptData {
     }
 
     public Interface getTypescriptClass(String name) {
-        String finalName = name.replace("$",".");
+        String finalName = name;
         if(finalName.contains(".")) {
             int i = finalName.indexOf(".");
             return namespaces.getOrCreate(finalName.substring(0, i), () -> new Namespace(finalName.substring(0, i))).getTypescriptClass(name.substring(i+1));

@@ -27,6 +27,10 @@ public class Interface implements AcceptTypeScriptData {
 
     public String renamedFrom = "";
 
+    public String getGenerics() {
+        return generics.isEmpty() ? "" : "<" + generics + ">";
+    }
+
     public void handleGenerics(TypeScriptData data) {
         if(!generics.isEmpty()) {
             data.stringBuilder.append("<");
@@ -50,69 +54,99 @@ public class Interface implements AcceptTypeScriptData {
         }
     }
 
-    @Override
-    public void accept(TypeScriptData data) {
-        if(name.isEmpty()) return;
-        data.appendIndent();
-        data.stringBuilder.append("interface ");
-        data.stringBuilder.append(name);
-        handleGenerics(data);
-
-        handleSuperClass(data);
-        data.stringBuilder.append(" {\n");
-        data.increaseIndent();
-
-
-        acceptMembers(data);
-
-        data.accessingOriginalName = true;
-        acceptMembers(data);
-        data.accessingOriginalName = false;
-
-        data.decreaseIndent();
-        data.appendIndent();
-        data.stringBuilder.append("}\n");
-
-        data.appendIndent();
-        data.stringBuilder.append("class ");
-        data.stringBuilder.append(name);
-        handleGenerics(data);
-        data.stringBuilder.append(" extends ");
-        data.stringBuilder.append(name);
+    public void handleStaticPre(TypeScriptData data) {
+        data.appendIndent().append("interface _").append(name).append("$$static");
         handleGenerics(data);
         data.stringBuilder.append(" {\n");
         data.increaseIndent();
+    }
 
+    public void handleStaticPost(TypeScriptData data) {
+        data.decreaseIndent().appendIndent().append("}\n");
+        data.appendIndent().append("declare let ").append(name).append(": _").append(name).append("$$static & ClassLike;\n");
+    }
+
+    public void handleStaticIn(TypeScriptData data) {
         data.accessingStatic = true;
         acceptMembers(data);
         data.accessingOriginalName = true;
         acceptMembers(data);
+        data.accessingOriginalName = false;
         data.accessingStatic = false;
+
+        data.accessingConstructor = true;
+        acceptFunctions(data);
+        data.accessingConstructor = false;
+        //data.appendIndent().append("class: java.lang.Class<any>;\n");
+    }
+
+    public void handleStatic(TypeScriptData data) {
+        handleStaticPre(data);
+        handleStaticIn(data);
+        handleStaticPost(data);
+    }
+
+    public void handleInstancePre(TypeScriptData data) {
+        data.appendIndent().append("interface _").append(name);
+        handleGenerics(data);
+        data.stringBuilder.append(" {\n");
+        data.increaseIndent();
+    }
+
+    public void handleInstancePost(TypeScriptData data) {
+
+        data.decreaseIndent().appendIndent().append("}\n");
+        data.appendIndent().append("type ").append(name);
+        handleGenerics(data);
+        data.stringBuilder.append(" = CombineTypes<[");
+
+        var types = new HashSet<String>();
+        //types.add("_" + name + getGenerics());
+        if(!superClass.isEmpty()) types.add(superClass);
+        types.addAll(interfaces);
+        var typesWithSelf = new ArrayList<String>();
+        typesWithSelf.add("_" + name + getGenerics());
+        typesWithSelf.addAll(types);
+        data.stringBuilder.append(String.join(", ", typesWithSelf));
+
+        data.stringBuilder.append("]>;\n");
+    }
+
+    public void handleInstanceIn(TypeScriptData data) {
+        acceptMembers(data);
+        data.accessingOriginalName = true;
         acceptMembers(data);
         data.accessingOriginalName = false;
+    }
 
-        data.decreaseIndent();
-        data.appendIndent();
-        data.stringBuilder.append("}\n");
+    public void handleInstance(TypeScriptData data) {
+        handleInstancePre(data);
+        handleInstanceIn(data);
+        handleInstancePost(data);
+    }
 
+    @Override
+    public void accept(TypeScriptData data) {
+        if(name == null || name.isEmpty()) return;
 
+        handleStatic(data);
 
-        /*
-        data.appendIndent();
-        data.stringBuilder.append("declare var ");
-        data.stringBuilder.append(name);
-        data.stringBuilder.append(": ");
-        data.stringBuilder.append(name);
-        data.stringBuilder.append(";\n");
-
-         */
+        handleInstance(data);
     }
 
     public void acceptMembers(TypeScriptData data) {
+        acceptFunctions(data);
+        acceptVariables(data);
+    }
+
+    public void acceptFunctions(TypeScriptData data) {
         for(var func : functions.values()) {
             for(var declaration : func)
                 declaration.accept(data);
         }
+    }
+
+    public void acceptVariables(TypeScriptData data) {
         for(var v : variables.values()) {
             v.accept(data);
         }

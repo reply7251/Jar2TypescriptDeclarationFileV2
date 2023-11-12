@@ -33,9 +33,7 @@ public class Converter {
 
         }
 
-        for(var namespace : TypeScriptData.INSTANCE.namespaces.values()) {
-            namespace.accept(TypeScriptData.INSTANCE);
-        }
+        TypeScriptData.INSTANCE.parse();
 
         var out = new File(TypeScriptData.INSTANCE.outputFile);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(out))) {

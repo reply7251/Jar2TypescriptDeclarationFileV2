@@ -38,9 +38,8 @@ public class Function implements AcceptTypeScriptData {
         if(name.contains("$")) {
             return;
         }
-        if(isStatic && name.equals("constructor")) {
-            if(!parameters.isEmpty() && parameters.get(0).name.isEmpty())
-                return;
+        if(!isStatic && name.equals("constructor")) {
+            return;
         }
         if(!returnType.replaceAll("\\.1", "").equals(returnType)) {
             return;
@@ -58,7 +57,7 @@ public class Function implements AcceptTypeScriptData {
             }
         }
         if(isStatic) {
-            data.stringBuilder.append("static ");
+            //data.stringBuilder.append("static ");
         }
         if(isPrivate || isProtected) {
             data.stringBuilder.append("_");

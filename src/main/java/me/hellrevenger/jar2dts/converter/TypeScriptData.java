@@ -34,6 +34,25 @@ public class TypeScriptData {
     public TypeScriptData() {
     }
 
+    public void parse() {
+        stringBuilder.append("type ClassLike = { class: "+namespacePrefix+"java.lang.Class<any> }\n");
+        stringBuilder.append("""
+                type isAny<T> = (T extends never ? true : false) extends false ? false : true;
+                type CombineTypes<A> = (
+                  A extends [infer B] ?
+                    isAny<B> extends true ? never : B
+                  : A extends [infer B, ...infer Rest] ?
+                    isAny<B> extends true ?
+                      CombineTypes<Rest>
+                    : CombineTypes<Rest> extends never ? B : B & CombineTypes<Rest>
+                  : never
+                )
+                """);
+        for(var namespace : namespaces.values()) {
+            namespace.accept(this);
+        }
+    }
+
     public boolean hasNamespace(String name) {
         if(name.contains(".")) {
             int i = name.indexOf(".");
@@ -50,16 +69,19 @@ public class TypeScriptData {
         return namespaces.getOrCreate(name, () -> new Namespace(name));
     }
 
-    public void appendIndent() {
+    public StringBuilder appendIndent() {
         stringBuilder.append(" ".repeat(indent));
+        return stringBuilder;
     }
 
-    public void increaseIndent() {
+    public TypeScriptData increaseIndent() {
         indent += 2;
+        return this;
     }
 
-    public void decreaseIndent() {
+    public TypeScriptData decreaseIndent() {
         indent -= 2;
+        return this;
     }
 }
 
