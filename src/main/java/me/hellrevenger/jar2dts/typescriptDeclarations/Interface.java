@@ -6,8 +6,10 @@ import me.hellrevenger.jar2dts.utils.DefaultMap;
 import me.hellrevenger.jar2dts.utils.Lists;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Interface implements AcceptTypeScriptData {
     public DefaultMap<String, ArrayList<Function>> functions = new DefaultMap<>();
@@ -63,7 +65,7 @@ public class Interface implements AcceptTypeScriptData {
 
     public void handleStaticPost(TypeScriptData data) {
         data.decreaseIndent().appendIndent().append("}\n");
-        data.appendIndent().append("declare let ").append(name).append(": _").append(name).append("$$static & ClassLike;\n");
+        data.appendIndent().append("export declare let ").append(name).append(": _").append(name).append("$$static").append(getGenerics()).append(" & ClassLike;\n");
     }
 
     public void handleStaticIn(TypeScriptData data) {
@@ -96,7 +98,7 @@ public class Interface implements AcceptTypeScriptData {
     public void handleInstancePost(TypeScriptData data) {
 
         data.decreaseIndent().appendIndent().append("}\n");
-        data.appendIndent().append("interface ").append(name);
+        data.appendIndent().append("export interface ").append(name);
         handleGenerics(data);
         data.stringBuilder.append(" extends CombineTypes<[");
 

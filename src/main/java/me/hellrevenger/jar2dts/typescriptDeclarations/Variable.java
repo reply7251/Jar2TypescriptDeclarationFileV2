@@ -40,13 +40,11 @@ public class Variable implements AcceptTypeScriptData {
             if(isStatic) {
                 //data.stringBuilder.append("static ");
             }
-            if(isReadonly) {
-                data.stringBuilder.append("readonly ");
-            } else if(isStatic) {
-                //data.stringBuilder.append("var ");
-            }
+
             if(isPrivate || isProtected) {
                 data.stringBuilder.append("_");
+            } else if(isReadonly) {
+                data.stringBuilder.append("readonly ");
             }
         } else {
             renamedFrom = name;

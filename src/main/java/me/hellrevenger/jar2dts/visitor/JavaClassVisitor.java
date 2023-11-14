@@ -58,6 +58,12 @@ public class JavaClassVisitor extends ClassVisitor {
         var clazz = TypeScriptData.INSTANCE.getNamespace(location).getInterface(lastAccessClassNameSimple);
         var originalName = name;
         var fieldName = TypeScriptData.INSTANCE.mapping.map(lastAccessClassName, name);
+        if(fieldName.length() == 1) {
+            var f2 = TypeScriptData.INSTANCE.mapping2.map(lastAccessClassName, name);
+            if(f2.length() != 1) {
+                fieldName = f2;
+            }
+        }
         if (fieldName.equals("constructor")){
             fieldName = "_" + fieldName;
         }
@@ -107,6 +113,12 @@ public class JavaClassVisitor extends ClassVisitor {
         var originalName = name;
         var methodName = TypeScriptData.INSTANCE.mapping.map(lastAccessClassName, name);
 
+        if(methodName.length() == 1) {
+            var f2 = TypeScriptData.INSTANCE.mapping2.map(lastAccessClassName, name);
+            if(f2.length() != 1) {
+                methodName = f2;
+            }
+        }
 
         if (methodName.equals("constructor")){
             methodName = "_" + methodName;
@@ -167,7 +179,7 @@ public class JavaClassVisitor extends ClassVisitor {
 
         MySignatureReader mySignatureReader = new MySignatureReader(sign);
         mySignatureReader.accept(new MethodSignatureVisitor(self));
-        self.returnType = "";
+        self.returnType = lastAccessClassNameSimple;
 
     }
 
@@ -176,7 +188,7 @@ public class JavaClassVisitor extends ClassVisitor {
         //System.out.printf("visitClass: %s sign: %s super:%s interfaces:[%s]\n", name, signature, superName, Lists.from(interfaces).stream().collect(Collectors.joining(",")));
 
         isRecord = (Opcodes.ACC_RECORD & access) != 0;
-        lastAccessClassName = ClassName.remap(name);
+        lastAccessClassName = ClassName.remapForNamespace(name);
         lastAccessClassNameSimple = lastAccessClassName.substring(lastAccessClassName.contains(".") ? lastAccessClassName.lastIndexOf(".")+1 : 0);
         lastAccessPackage = lastAccessClassName.substring(0,lastAccessClassName.contains(".") ? lastAccessClassName.lastIndexOf(".") : 0);
 

@@ -14,8 +14,8 @@ public class ClassName {
     }
 
     public static String remapForNamespace(String s) {
-        s = s.replace("/",".").replace("$",".__");
-        return _remap(s);
+        s = s.replace("/",".");
+        return s;
     }
 
     static String _remap(String s) {
@@ -51,6 +51,14 @@ public class ClassName {
 
         remapMap.put("java.lang.String","string");
         remapMap.put("java.lang.Object","any");
+        remapMap.put("java.lang.Number","number");
+        remapMap.put("java.lang.Float","number");
+        remapMap.put("java.lang.Double","number");
+        remapMap.put("java.lang.Integer","number");
+        remapMap.put("java.lang.Long","number");
+        remapMap.put("java.lang.Short","number");
+        remapMap.put("java.lang.Byte","number");
+        remapMap.put("java.lang.Boolean","boolean");
         remapMap2.put("\\? super ","");
         remapMap2.put("\\? extends ","");
         remapMap2.put("\\.\\d+",".");

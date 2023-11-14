@@ -35,8 +35,8 @@ public class Mapping {
                 continue;
             }
             //System.out.println("class_def: " + String.join(", ",class_def));
-            var from = class_def[1].replace("/",".").replace("$",".");
-            var to = class_def[2].replace("/",".").replace("$",".");
+            var from = class_def[1].replace("/",".");//.replace("$",".");
+            var to = class_def[2].replace("/",".");//.replace("$",".");
 
             var current_class = new ClassMapping(from, to);
             for(var item : clazz) {
@@ -48,24 +48,21 @@ public class Mapping {
                         break;
                 }
             }
-            if(to.equals("net/minecraft/client/gui/screens/worldselection/WorldSelectionList".replace("/",""))) {
-                //System.out.println("success?");
-            } else if (to.contains("WorldSelectionList")) {
-                //System.out.println("success 2?");
-            }
+
             classes.put(from, current_class);
             classes.put(to, current_class);
         }
     }
 
     public String map(String clazz, String member) {
-        clazz = clazz.replace("/",".").replace("$",".");
+        clazz = clazz.replace("/",".");//.replace("$",".");
         return classes.containsKey(clazz) ? classes.get(clazz).map(member) : member;
     }
 
     public String map(String clazz) {
-        clazz = clazz.replace("/",".").replace("$",".");
-        return classes.containsKey(clazz) ? classes.get(clazz).map() : clazz;
+        clazz = clazz.replace("/",".");//.replace("$",".");
+        //return classes.containsKey(clazz) ? classes.get(clazz).map() : clazz;
+        return clazz;
     }
 
     static class ClassMapping {

@@ -31,7 +31,7 @@ public class Namespace implements AcceptTypeScriptData {
         if(data.indent == 0) {
             data.stringBuilder.append("declare ");
         } else {
-            //data.stringBuilder.append("export ");
+            data.stringBuilder.append("export ");
         }
         data.stringBuilder.append("namespace ");
         data.stringBuilder.append(name);
@@ -53,6 +53,12 @@ public class Namespace implements AcceptTypeScriptData {
 
 
 
+
+
+        data.decreaseIndent();
+        data.appendIndent();
+        data.stringBuilder.append("}\n");
+
         if(modified != null) {
             data.appendIndent();
             data.stringBuilder.append("export { ");
@@ -61,10 +67,6 @@ public class Namespace implements AcceptTypeScriptData {
             data.stringBuilder.append(modified);
             data.stringBuilder.append(" }\n");
         }
-
-        data.decreaseIndent();
-        data.appendIndent();
-        data.stringBuilder.append("}\n");
     }
 
     public boolean hasInterface(String name) {

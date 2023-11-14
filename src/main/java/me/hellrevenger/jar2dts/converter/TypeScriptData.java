@@ -30,6 +30,7 @@ public class TypeScriptData {
     public String namespacePrefix;
 
     public Mapping mapping = new Mapping();
+    public Mapping mapping2 = new Mapping();
 
     public TypeScriptData() {
     }

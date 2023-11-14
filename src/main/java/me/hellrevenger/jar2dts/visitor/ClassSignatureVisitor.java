@@ -23,7 +23,7 @@ public class ClassSignatureVisitor implements MySignatureVisitor {
 
     @Override
     public MySignatureVisitor visitSuperclass(String superclass) {
-        superclass = ClassName.remap(superclass);
+        superclass = ClassName.remapForNamespace(superclass);
         if(superclass.equals("any")) {
             superclass = "java.lang.Object";
         }
@@ -35,7 +35,7 @@ public class ClassSignatureVisitor implements MySignatureVisitor {
 
     @Override
     public MySignatureVisitor visitInterface(String superclass) {
-        superclass = ClassName.remap(superclass);
+        superclass = ClassName.remapForNamespace(superclass);
         if(superclass.equals("any")) {
             superclass = "java.lang.Object";
         }
