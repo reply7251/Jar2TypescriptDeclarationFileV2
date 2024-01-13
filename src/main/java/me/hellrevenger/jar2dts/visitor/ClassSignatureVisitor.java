@@ -2,6 +2,7 @@ package me.hellrevenger.jar2dts.visitor;
 
 import me.hellrevenger.jar2dts.typescriptDeclarations.Interface;
 import me.hellrevenger.jar2dts.utils.ClassName;
+import me.hellrevenger.jar2dts.utils.Scope;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class ClassSignatureVisitor implements MySignatureVisitor {
         }
         if(superclass.startsWith("java.lang.Enum")) return this;
         //interf.interfaces.add(superclass);
-        interf.superClass = superclass;
+        interf.superClass = Scope.reduceScope(interf.scope, superclass);
         return this;
     }
 
@@ -40,7 +41,12 @@ public class ClassSignatureVisitor implements MySignatureVisitor {
             superclass = "java.lang.Object";
         }
         if(superclass.startsWith("java.lang.Enum")) return this;
-        interf.interfaces.add(superclass);
+        interf.interfaces.add(Scope.reduceScope(interf.scope, superclass));
         return this;
+    }
+
+    @Override
+    public String getScope() {
+        return interf.scope;
     }
 }

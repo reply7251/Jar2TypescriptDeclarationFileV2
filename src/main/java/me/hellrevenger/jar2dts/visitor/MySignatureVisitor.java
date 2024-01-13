@@ -22,4 +22,6 @@ public interface MySignatureVisitor {
     }
 
     default MySignatureVisitor visitEnd() { return this; }
+
+    String getScope();
 }

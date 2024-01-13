@@ -20,10 +20,15 @@ public class FieldSignatureVisitor implements MySignatureVisitor {
     }
 
     @Override
+    public String getScope() {
+        return variable.scope;
+    }
+
+    @Override
     public MySignatureVisitor visitGenerics(List<String> generics) {
         variable.generics = generics.stream().map(x->x.contains(";")?x.substring(x.lastIndexOf(";")):x)
                 .collect(Collectors.joining(","))
-                .replace("/",".").replace("$",".");
+                .replace("/",".");
         return this;
     }
 }

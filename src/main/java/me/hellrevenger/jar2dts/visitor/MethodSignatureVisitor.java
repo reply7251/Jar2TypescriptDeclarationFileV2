@@ -31,11 +31,16 @@ public class MethodSignatureVisitor implements MySignatureVisitor{
     @Override
     public MySignatureVisitor visitParameter(String type) {
         Variable variable = new Variable();
-        variable.name = "arg" + function.parameters.size();
+        variable.name = "a" + function.parameters.size();
         function.parameters.add(variable);
         variable.type = ClassName.remap(type);
         variable.isParam = true;
         variable.isStatic = function.isStatic;
         return this;
+    }
+
+    @Override
+    public String getScope() {
+        return function.scope;
     }
 }

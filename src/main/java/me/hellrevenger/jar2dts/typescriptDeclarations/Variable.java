@@ -23,6 +23,8 @@ public class Variable implements AcceptTypeScriptData {
     public boolean isProtected = false;
     public String renamedFrom = "";
 
+    public String scope = "";
+
     @Override
     public void accept(TypeScriptData data) {
         if(isStatic != data.accessingStatic) return;

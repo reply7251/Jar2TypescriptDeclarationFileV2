@@ -32,7 +32,7 @@ public class Main {
 
 
 
-        TypeScriptData.INSTANCE.namespacePrefix = options.get("prefix").value();
+        TypeScriptData.INSTANCE.setPrefix(options.get("prefix").value());
         TypeScriptData.INSTANCE.inputFile = options.get("input").value();
         TypeScriptData.INSTANCE.outputFile = options.get("output").value();
 

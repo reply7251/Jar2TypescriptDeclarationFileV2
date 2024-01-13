@@ -1,6 +1,7 @@
 package me.hellrevenger.jar2dts.visitor;
 
 import me.hellrevenger.jar2dts.utils.ClassName;
+import me.hellrevenger.jar2dts.utils.Scope;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
@@ -33,6 +34,7 @@ public class MySignatureReader {
      */
     public void accept(MySignatureVisitor signatureVisitor) {
         String signature = this.signatureValue;
+        var scope = signatureVisitor.getScope();
         int length = signature.length();
         int offset; // Current offset in the parsed signature (parsed from left to right).
         char currentChar; // The signature character at 'offset', or just before.
@@ -55,13 +57,13 @@ public class MySignatureReader {
                 offset = classBoundStartOffset + 1;
                 currentChar = signature.charAt(offset);
                 if (currentChar == 'L' || currentChar == '[' || currentChar == 'T') {
-                    offset = parseType(signature, offset);
+                    offset = parseType(signature, offset, scope);
                 }
 
                 // While the character after the class bound or after the last parsed interface bound
                 // is ':', we need to parse another interface bound.
                 while ((currentChar = signature.charAt(offset++)) == ':') {
-                    offset = parseType(signature, offset);
+                    offset = parseType(signature, offset, scope);
                 }
 
                 // At this point a TypeParameter has been fully parsed, and we need to parse the next one
@@ -80,25 +82,25 @@ public class MySignatureReader {
         if (signature.charAt(offset) == '(') {
             offset++;
             while (signature.charAt(offset) != ')') {
-                offset = parseType(signature, offset);
+                offset = parseType(signature, offset, scope);
                 signatureVisitor.visitParameter(lastParsedType);
             }
             // Use offset + 1 to skip ')'.
-            offset = parseType(signature, offset + 1);
+            offset = parseType(signature, offset + 1, scope);
             signatureVisitor.visitReturnType(lastParsedType);
 
             while (offset < length) {
                 // Use offset + 1 to skip the first character of a ThrowsSignature, i.e. '^'.
-                offset = parseType(signature, offset + 1);
+                offset = parseType(signature, offset + 1, scope);
             }
         } else {
             // Otherwise we are parsing a ClassSignature (by hypothesis on the method input), which has
             // one or more ClassTypeSignature for the super class and the implemented interfaces.
-            offset = parseType(signature, offset);
+            offset = parseType(signature, offset, scope);
             signatureVisitor.visitSuperclass(lastParsedType);
             //System.out.println("super: " + lastParsedType);
             while (offset < length) {
-                offset = parseType(signature, offset);
+                offset = parseType(signature, offset, scope);
                 signatureVisitor.visitInterface(lastParsedType);
                 //System.out.println("super: " + lastParsedType);
             }
@@ -107,29 +109,14 @@ public class MySignatureReader {
     }
 
     /**
-     * Makes the given visitor visit the signature of this {@link SignatureReader}. This signature is
-     * the one specified in the constructor (see {@link #SignatureReader}). This method is intended to
-     * be called on a {@link SignatureReader} that was created using a <i>JavaTypeSignature</i>, such
-     * as the <code>signature</code> parameter of the {@link
-     * org.objectweb.asm.ClassVisitor#visitField} or {@link
-     * org.objectweb.asm.MethodVisitor#visitLocalVariable} methods.
-     *
-     * @param signatureVisitor the visitor that must visit this signature.
-     */
-    public void acceptType(final SignatureVisitor signatureVisitor) {
-        parseType(signatureValue, 0);
-    }
-
-    /**
      * Parses a JavaTypeSignature and makes the given visitor visit it.
      *
      * @param signature a string containing the signature that must be parsed.
      * @param startOffset index of the first character of the signature to parsed.
-     * @param signatureVisitor the visitor that must visit this signature.
      * @return the index of the first character after the parsed signature.
      */
     private int parseType(
-            final String signature, final int startOffset) {
+            final String signature, final int startOffset, String scope) {
         int offset = startOffset; // Current offset in the parsed signature.
         char currentChar = signature.charAt(offset++); // The signature character at 'offset'.
 
@@ -150,7 +137,7 @@ public class MySignatureReader {
 
             case '[':
                 // Case of an ArrayTypeSignature, a '[' followed by a JavaTypeSignature.
-                offset = parseType(signature, offset);
+                offset = parseType(signature, offset, scope);
                 lastParsedType += "[]";
                 return offset;
 
@@ -176,7 +163,7 @@ public class MySignatureReader {
                         // or an inner class name. This name may already have been visited it is was followed by
                         // type arguments between '<' and '>'. If not, we need to visit it here.
                         if (!visited) {
-                            String name = signature.substring(start, offset - 1);
+                            String name = Scope.reduceScope(scope, ClassName.remap(signature.substring(start, offset - 1)));
                             lastParsedType = name;
                         }
                         // If we reached the end of the ClassTypeSignature return, otherwise start the parsing
@@ -192,7 +179,7 @@ public class MySignatureReader {
                         // If a '<' is encountered, this means we have fully parsed the main class name or an
                         // inner class name, and that we now need to parse TypeArguments. First, we need to
                         // visit the parsed class name.
-                        String name = signature.substring(start, offset - 1);
+                        String name = Scope.reduceScope(scope, ClassName.remap(signature.substring(start, offset - 1)));
                         visited = true;
                         StringBuilder parsedType = new StringBuilder(name + "<");
                         // Now, parse the TypeArgument(s), one at a time.
@@ -208,12 +195,12 @@ public class MySignatureReader {
                                     // Extends or Super TypeArgument. Use offset + 1 to skip the '+' or '-'.
                                     offset =
                                             parseType(
-                                                    signature, offset + 1);
+                                                    signature, offset + 1, scope);
                                     parsedType.append(lastParsedType).append(",");
                                     break;
                                 default:
                                     // Instanceof TypeArgument. The '=' is implicit.
-                                    offset = parseType(signature, offset);
+                                    offset = parseType(signature, offset, scope);
                                     parsedType.append(lastParsedType).append(",");
                                     break;
                             }
@@ -238,14 +225,12 @@ public class MySignatureReader {
         return switch (type) {
             case 'Z' -> "boolean";
             case 'C' -> "char";
-            //byte
-            //short
-            //int
-            //float
-            //long
-            //double
-            case 'B', 'S', 'I', 'F', 'J', 'D' ->
-                    "number";
+            case 'B' -> "byte";
+            case 'S' -> "short";
+            case 'I' -> "int";
+            case 'F' -> "float";
+            case 'J' -> "long";
+            case 'D' -> "double";
             case 'V' -> "void";
             default -> null;
         };

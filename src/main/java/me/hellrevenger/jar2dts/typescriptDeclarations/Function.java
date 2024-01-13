@@ -31,6 +31,8 @@ public class Function implements AcceptTypeScriptData {
 
     String cachedSign = null;
 
+    public String scope = "";
+
     public void accept(TypeScriptData data) {
         if(isStatic != data.accessingStatic) return;
         if(renamedFrom.isEmpty() && data.accessingOriginalName) return;
@@ -75,8 +77,6 @@ public class Function implements AcceptTypeScriptData {
         data.stringBuilder.append("(");
         for (int i = 0; i < parameters.size(); i++) {
             var param = parameters.get(i);
-            if(minArgCount != -1 && minArgCount < i+1 && !param.name.endsWith("?"))
-                param.name += "?";
             param.accept(data);
             if(i != parameters.size()-1) {
                 data.stringBuilder.append(", ");

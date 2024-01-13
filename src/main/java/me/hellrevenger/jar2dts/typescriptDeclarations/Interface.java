@@ -21,6 +21,9 @@ public class Interface implements AcceptTypeScriptData {
 
     public String name;
     public String fullName;
+
+    public String scope;
+
     public String generics = "";
 
     public boolean hasConstructor = false;
@@ -38,21 +41,6 @@ public class Interface implements AcceptTypeScriptData {
             data.stringBuilder.append("<");
             data.stringBuilder.append(generics);
             data.stringBuilder.append(">");
-        }
-    }
-
-    public void handleSuperClass(TypeScriptData data) {
-        var supers = new ArrayList<String>();
-
-        if(!superClass.isEmpty()) {
-            supers.add(superClass);
-        }
-        if(!interfaces.isEmpty()) {
-            supers.addAll(interfaces);
-        }
-        if(!supers.isEmpty()) {
-            data.stringBuilder.append(" extends ");
-            data.stringBuilder.append(String.join(", ", supers));
         }
     }
 

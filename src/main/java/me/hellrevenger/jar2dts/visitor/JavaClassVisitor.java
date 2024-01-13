@@ -55,7 +55,7 @@ public class JavaClassVisitor extends ClassVisitor {
             return super.visitField(access, name, descriptor, signature, value);
         }
         String location = TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; // "Packages." +
-        var clazz = TypeScriptData.INSTANCE.getNamespace(location).getInterface(lastAccessClassNameSimple);
+        var clazz = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
         var originalName = name;
         var fieldName = TypeScriptData.INSTANCE.mapping.map(lastAccessClassName, name);
         if(fieldName.length() == 1) {
@@ -69,6 +69,8 @@ public class JavaClassVisitor extends ClassVisitor {
         }
         var self = clazz.getVariable(fieldName);
         self.name = fieldName;
+
+        self.scope = lastAccessPackage;
 
         self.isStatic = (access & Opcodes.ACC_STATIC) != 0;
         self.isReadonly = (access & Opcodes.ACC_FINAL) != 0;
@@ -108,7 +110,7 @@ public class JavaClassVisitor extends ClassVisitor {
 
 
         String location = TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; // "Packages." +
-        var clazz = TypeScriptData.INSTANCE.getNamespace(location).getInterface(lastAccessClassNameSimple);
+        var clazz = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
 
         var originalName = name;
         var methodName = TypeScriptData.INSTANCE.mapping.map(lastAccessClassName, name);
@@ -127,6 +129,8 @@ public class JavaClassVisitor extends ClassVisitor {
         var selves = clazz.getFunction(methodName);
         var self = new Function();
         selves.add(self);
+
+        self.scope = lastAccessPackage;
 
         self.name = methodName;
         self.isStatic = (access & Opcodes.ACC_STATIC) != 0;
@@ -148,7 +152,7 @@ public class JavaClassVisitor extends ClassVisitor {
         //System.out.printf("visitMethod from %s: %s %s %s\n", lastAccessClassName,name, descriptor, signature);
         String sign = signature == null ? descriptor : signature;
         String location = TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; //"Packages." +
-        var clazz = TypeScriptData.INSTANCE.getNamespace(location).getInterface(lastAccessClassNameSimple);
+        var clazz = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
 
         var methodName = "new";
         /*
@@ -160,16 +164,15 @@ public class JavaClassVisitor extends ClassVisitor {
         var selves = clazz.getFunction(methodName);
         Function self;
 
-        if(!clazz.hasConstructor || true) {
-            //clazz.interfaces.add(lastAccessClassNameSimple + "$$constructor");
-            clazz.constructor = new Function();
-            clazz.constructor.name = methodName;
-            self = clazz.constructor;;
-            selves.add(self);
-        } else {
-            self = selves.get(0);
-        }
+        //clazz.interfaces.add(lastAccessClassNameSimple + "$$constructor");
+        clazz.constructor = new Function();
+        clazz.constructor.name = methodName;
+        self = clazz.constructor;;
+        selves.add(self);
+
         clazz.hasConstructor = true;
+
+        self.scope = lastAccessPackage;
 
         self.name = methodName;
         //self.isStatic = true;
@@ -201,12 +204,17 @@ public class JavaClassVisitor extends ClassVisitor {
         String location =  TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; //"Packages." +
         Interface interf;
         if((access & Opcodes.ACC_INTERFACE) != 0) {
-            interf = TypeScriptData.INSTANCE.getNamespace(location).getInterface(lastAccessClassNameSimple);
+            interf = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
         } else {
-            interf = TypeScriptData.INSTANCE.getNamespace(location).getTypescriptClass(lastAccessClassNameSimple);
+            interf = TypeScriptData.INSTANCE.rootNamespace.getTypescriptClass(lastAccessClassName);
         }
         interf.fullName = lastAccessClassName;
         interf.name = lastAccessClassNameSimple;
+        interf.scope = lastAccessPackage;
+        interf.renamedFrom = TypeScriptData.INSTANCE.mapping.map(lastAccessClassName);
+        if(interf.renamedFrom.equals(lastAccessClassName)) {
+            interf.renamedFrom = null;
+        }
         ClassSignatureVisitor csv = new ClassSignatureVisitor(interf);
         if(signature != null) {
             MySignatureReader mySignatureReader = new MySignatureReader(signature);

@@ -21,7 +21,7 @@ public class TypeScriptData {
     public boolean accessingConstructor = false;
     public String location = "";
 
-    public DefaultMap<String, Namespace> namespaces = new DefaultMap<>();
+    public final Namespace rootNamespace = new Namespace("");
 
     public ArrayList<Class<?>> classes = new ArrayList<>();
 
@@ -49,25 +49,20 @@ public class TypeScriptData {
                   : never
                 )
                 """);
-        for(var namespace : namespaces.values()) {
-            namespace.accept(this);
-        }
-    }
-
-    public boolean hasNamespace(String name) {
-        if(name.contains(".")) {
-            int i = name.indexOf(".");
-            return namespaces.containsKey(name.substring(0, i)) && getNamespace(name.substring(0, i)).hasNamespace(name.substring(i + 1));
-        }
-        return namespaces.containsKey(name);
+        stringBuilder.append("""
+                type char   = number & {};
+                type byte   = number & {};
+                type short  = number & {};
+                type int    = number & {};
+                type long   = number | BigInt;
+                type float  = number & {};
+                type double = number & {};
+                """);
+        rootNamespace.accept(this);
     }
 
     public Namespace getNamespace(String name) {
-        if(name.contains(".")) {
-            int i = name.indexOf(".");
-            return namespaces.getOrCreate(name.substring(0, i), () -> new Namespace(name.substring(0, i))).getNamespace(name.substring(i+1));
-        }
-        return namespaces.getOrCreate(name, () -> new Namespace(name));
+        return rootNamespace.getNamespace(name);
     }
 
     public StringBuilder appendIndent() {
@@ -83,6 +78,14 @@ public class TypeScriptData {
     public TypeScriptData decreaseIndent() {
         indent -= 2;
         return this;
+    }
+
+    public void setPrefix(String prefix) {
+        if (prefix.endsWith(".")) {
+            prefix = prefix.replaceAll("\\.+$", "");
+        }
+        this.namespacePrefix = prefix;
+        rootNamespace.name = prefix;
     }
 }
 

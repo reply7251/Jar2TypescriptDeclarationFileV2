@@ -61,8 +61,13 @@ public class Mapping {
 
     public String map(String clazz) {
         clazz = clazz.replace("/",".");//.replace("$",".");
-        //return classes.containsKey(clazz) ? classes.get(clazz).map() : clazz;
-        return clazz;
+        return classes.containsKey(clazz) ? classes.get(clazz).map() : clazz;
+        //return clazz;
+    }
+
+    public String reverse(String clazz) {
+        clazz = clazz.replace("/",".");
+        return classes.containsKey(clazz) ? classes.get(clazz).from : clazz;
     }
 
     static class ClassMapping {

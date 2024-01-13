@@ -20,7 +20,7 @@ public class Jar extends JarFile{
         var entries = this.entries();
         while (entries.hasMoreElements()) {
             var entry = entries.nextElement();
-            if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+            if (!entry.isDirectory() && entry.getName().endsWith(".class") && !entry.getName().contains("-")) {
                 classes.add(entry.getName());
             }
         }
