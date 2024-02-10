@@ -84,6 +84,7 @@ public class TypeScriptData {
         if (prefix.endsWith(".")) {
             prefix = prefix.replaceAll("\\.+$", "");
         }
+        prefix += ".";
         this.namespacePrefix = prefix;
         rootNamespace.name = prefix;
     }
