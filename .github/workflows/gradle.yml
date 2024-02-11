@@ -40,6 +40,7 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.1
       with:
+        name: Jar2TypescriptDeclarationFileV2.jar
         path: |
           ./build/libs/*.jar
 
