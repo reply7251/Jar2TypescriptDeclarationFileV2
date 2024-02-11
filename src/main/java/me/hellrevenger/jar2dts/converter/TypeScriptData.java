@@ -36,7 +36,11 @@ public class TypeScriptData {
     }
 
     public void parse() {
-        stringBuilder.append("type ClassLike = { class: "+namespacePrefix+"java.lang.Class<any> }\n");
+        if(namespacePrefix.isEmpty()) {
+            stringBuilder.append("type ClassLike = { class: java.lang.Class<any> }\n");
+        } else {
+            stringBuilder.append("type ClassLike = { class: "+namespacePrefix+".java.lang.Class<any> }\n");
+        }
         stringBuilder.append("""
                 type isAny<T> = (T extends never ? true : false) extends false ? false : true;
                 type CombineTypes<A> = (
@@ -84,7 +88,6 @@ public class TypeScriptData {
         if (prefix.endsWith(".")) {
             prefix = prefix.replaceAll("\\.+$", "");
         }
-        prefix += ".";
         this.namespacePrefix = prefix;
         rootNamespace.name = prefix;
     }
