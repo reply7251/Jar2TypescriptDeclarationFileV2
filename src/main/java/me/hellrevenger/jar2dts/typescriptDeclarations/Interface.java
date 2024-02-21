@@ -53,7 +53,7 @@ public class Interface implements AcceptTypeScriptData {
 
     public void handleStaticPost(TypeScriptData data) {
         data.decreaseIndent().appendIndent().append("}\n");
-        data.appendIndent().append("export declare let ").append(name).append(": _").append(name).append("$$static").append(getGenerics()).append(" & ClassLike;\n");
+        data.appendIndent().append("let ").append(name).append(": _").append(name).append("$$static").append(getGenerics()).append(" & ClassLike;\n");
     }
 
     public void handleStaticIn(TypeScriptData data) {
@@ -86,7 +86,7 @@ public class Interface implements AcceptTypeScriptData {
     public void handleInstancePost(TypeScriptData data) {
 
         data.decreaseIndent().appendIndent().append("}\n");
-        data.appendIndent().append("export interface ").append(name);
+        data.appendIndent().append("interface ").append(name);
         handleGenerics(data);
         data.stringBuilder.append(" extends CombineTypes<[");
 

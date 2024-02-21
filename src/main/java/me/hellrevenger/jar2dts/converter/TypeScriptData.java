@@ -7,7 +7,6 @@ import me.hellrevenger.jar2dts.typescriptDeclarations.Variable;
 import me.hellrevenger.jar2dts.utils.DefaultMap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class TypeScriptData {
     public static final TypeScriptData INSTANCE = new TypeScriptData();
@@ -39,7 +38,7 @@ public class TypeScriptData {
         if(namespacePrefix.isEmpty()) {
             stringBuilder.append("type ClassLike = { class: java.lang.Class<any> }\n");
         } else {
-            stringBuilder.append("type ClassLike = { class: "+namespacePrefix+".java.lang.Class<any> }\n");
+            stringBuilder.append("type ClassLike = { class: ").append(namespacePrefix).append(".java.lang.Class<any> }\n");
         }
         stringBuilder.append("""
                 type isAny<T> = (T extends never ? true : false) extends false ? false : true;

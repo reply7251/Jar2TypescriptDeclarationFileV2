@@ -47,7 +47,7 @@ public class Namespace implements AcceptTypeScriptData {
     public void accept(TypeScriptData data) {
         if(name.equals("function")) {
             modified = "function";
-            name = "_function";
+            name = "\"function\"";
         }
         data.appendIndent();
         if(name.isEmpty()) {
@@ -57,9 +57,9 @@ public class Namespace implements AcceptTypeScriptData {
         if(data.indent == 0) {
             data.stringBuilder.append("declare ");
         } else {
-            data.stringBuilder.append("export ");
+            //data.stringBuilder.append("export ");
         }
-        data.stringBuilder.append("namespace ");
+        data.stringBuilder.append("module ");
         data.stringBuilder.append(name);
         data.stringBuilder.append(" {\n");
         data.increaseIndent();
@@ -69,15 +69,6 @@ public class Namespace implements AcceptTypeScriptData {
         data.decreaseIndent();
         data.appendIndent();
         data.stringBuilder.append("}\n");
-
-        if(modified != null) {
-            data.appendIndent();
-            data.stringBuilder.append("export { ");
-            data.stringBuilder.append(name);
-            data.stringBuilder.append(" as ");
-            data.stringBuilder.append(modified);
-            data.stringBuilder.append(" }\n");
-        }
     }
 
     public boolean hasNamespace(String name) {

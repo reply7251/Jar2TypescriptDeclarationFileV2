@@ -11,7 +11,7 @@ public class Scope {
         String[] scopes2 = target.split("\\.");
 
 
-        int len = Math.min(scopes1.length, scopes2.length);//Math.min(scope.length(), Math.max(target.lastIndexOf("."), 0));
+        int len = Math.min(scopes1.length, scopes2.length-1);//Math.min(scope.length(), Math.max(target.lastIndexOf("."), 0));
 
         for(int i = 0; i < len; i++) {
             if(!scopes1[i].equals(scopes2[i])) {
