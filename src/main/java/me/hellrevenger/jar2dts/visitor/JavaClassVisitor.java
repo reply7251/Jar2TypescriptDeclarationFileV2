@@ -81,13 +81,6 @@ public class JavaClassVisitor extends ClassVisitor {
             self.renamedFrom = originalName;
         }
 
-        /*
-        if((signature != null && signature.contains("-")) || descriptor.contains("-")) {
-            System.out.printf("field: %s, sign: %s, descriptor: %s\n", fieldName, signature, descriptor);
-        }
-
-         */
-
         String sign = signature == null ? descriptor : signature;
 
         MySignatureReader mySignatureReader = new MySignatureReader(sign);
