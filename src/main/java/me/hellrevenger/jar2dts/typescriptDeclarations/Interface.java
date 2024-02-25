@@ -47,7 +47,7 @@ public class Interface implements AcceptTypeScriptData {
     public void handleStaticPre(TypeScriptData data) {
         data.appendIndent().append("interface _").append(name).append("$$static");
         handleGenerics(data);
-        data.stringBuilder.append(" {\n");
+        data.stringBuilder.append(" extends ClassLike {\n");
         data.increaseIndent();
     }
 
@@ -56,7 +56,7 @@ public class Interface implements AcceptTypeScriptData {
         if(renamedFrom != null) {
             data.appendIndent().append("/** ").append(renamedFrom).append(" */\n");
         }
-        data.appendIndent().append("let ").append(name).append(": _").append(name).append("$$static").append(getGenerics()).append(" & ClassLike;\n");
+        data.appendIndent().append("let ").append(name).append(": _").append(name).append("$$static").append(getGenerics()).append(";\n");
     }
 
     public void handleStaticIn(TypeScriptData data) {
