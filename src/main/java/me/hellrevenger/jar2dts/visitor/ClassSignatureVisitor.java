@@ -1,5 +1,6 @@
 package me.hellrevenger.jar2dts.visitor;
 
+import me.hellrevenger.jar2dts.converter.TypeScriptData;
 import me.hellrevenger.jar2dts.typescriptDeclarations.Interface;
 import me.hellrevenger.jar2dts.utils.ClassName;
 import me.hellrevenger.jar2dts.utils.Scope;
@@ -24,24 +25,24 @@ public class ClassSignatureVisitor implements MySignatureVisitor {
 
     @Override
     public MySignatureVisitor visitSuperclass(String superclass) {
-        superclass = ClassName.remapForNamespace(superclass);
+        superclass = TypeScriptData.INSTANCE.mapping.map(ClassName.remapForNamespace(superclass));
         if(superclass.equals("any")) {
             superclass = "java.lang.Object";
         }
         if(superclass.startsWith("java.lang.Enum")) return this;
         //interf.interfaces.add(superclass);
-        interf.superClass = Scope.reduceScope(interf.scope, superclass);
+        interf.superClass = superclass;
         return this;
     }
 
     @Override
     public MySignatureVisitor visitInterface(String superclass) {
-        superclass = ClassName.remapForNamespace(superclass);
+        superclass = TypeScriptData.INSTANCE.mapping.map(ClassName.remapForNamespace(superclass));
         if(superclass.equals("any")) {
             superclass = "java.lang.Object";
         }
         if(superclass.startsWith("java.lang.Enum")) return this;
-        interf.interfaces.add(Scope.reduceScope(interf.scope, superclass));
+        interf.interfaces.add(superclass);
         return this;
     }
 

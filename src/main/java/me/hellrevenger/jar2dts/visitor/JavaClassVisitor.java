@@ -3,8 +3,10 @@ package me.hellrevenger.jar2dts.visitor;
 import me.hellrevenger.jar2dts.converter.TypeScriptData;
 import me.hellrevenger.jar2dts.typescriptDeclarations.Function;
 import me.hellrevenger.jar2dts.typescriptDeclarations.Interface;
+import me.hellrevenger.jar2dts.typescriptDeclarations.ShadowInterface;
 import me.hellrevenger.jar2dts.utils.ClassName;
 import me.hellrevenger.jar2dts.utils.Lists;
+import me.hellrevenger.jar2dts.utils.Scope;
 import org.objectweb.asm.*;
 
 import java.util.Arrays;
@@ -54,7 +56,6 @@ public class JavaClassVisitor extends ClassVisitor {
         if(name.startsWith("$") || unnecessary || isRecord) {
             return super.visitField(access, name, descriptor, signature, value);
         }
-        String location = TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; // "Packages." +
         var clazz = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
         var originalName = name;
         var fieldName = TypeScriptData.INSTANCE.mapping.map(lastAccessClassName, name);
@@ -102,7 +103,6 @@ public class JavaClassVisitor extends ClassVisitor {
         }
 
 
-        String location = TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; // "Packages." +
         var clazz = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
 
         var originalName = name;
@@ -144,7 +144,6 @@ public class JavaClassVisitor extends ClassVisitor {
         if((access & (Opcodes.ACC_SYNTHETIC | Opcodes.ACC_PRIVATE)) != 0) return;
         //System.out.printf("visitMethod from %s: %s %s %s\n", lastAccessClassName,name, descriptor, signature);
         String sign = signature == null ? descriptor : signature;
-        String location = TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; //"Packages." +
         var clazz = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
 
         var methodName = "new";
@@ -184,7 +183,10 @@ public class JavaClassVisitor extends ClassVisitor {
         //System.out.printf("visitClass: %s sign: %s super:%s interfaces:[%s]\n", name, signature, superName, Lists.from(interfaces).stream().collect(Collectors.joining(",")));
 
         isRecord = (Opcodes.ACC_RECORD & access) != 0;
-        lastAccessClassName = ClassName.remapForNamespace(name);
+        String renamedFrom = ClassName.remapForNamespace(name);
+        lastAccessClassName = TypeScriptData.INSTANCE.mapping.map(renamedFrom);
+        boolean renamed = !renamedFrom.equals(lastAccessClassName);
+
         lastAccessClassNameSimple = lastAccessClassName.substring(lastAccessClassName.contains(".") ? lastAccessClassName.lastIndexOf(".")+1 : 0);
         lastAccessPackage = lastAccessClassName.substring(0,lastAccessClassName.contains(".") ? lastAccessClassName.lastIndexOf(".") : 0);
 
@@ -194,7 +196,6 @@ public class JavaClassVisitor extends ClassVisitor {
             unnecessary = true;
             return;
         }
-        String location =  TypeScriptData.INSTANCE.namespacePrefix + lastAccessPackage; //"Packages." +
         Interface interf;
         if((access & Opcodes.ACC_INTERFACE) != 0) {
             interf = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
@@ -204,9 +205,8 @@ public class JavaClassVisitor extends ClassVisitor {
         interf.fullName = lastAccessClassName;
         interf.name = lastAccessClassNameSimple;
         interf.scope = lastAccessPackage;
-        interf.renamedFrom = TypeScriptData.INSTANCE.mapping.map(lastAccessClassName);
-        if(interf.renamedFrom.equals(lastAccessClassName)) {
-            interf.renamedFrom = null;
+        if(renamed) {
+            interf.renamedFrom = renamedFrom;
         }
         ClassSignatureVisitor csv = new ClassSignatureVisitor(interf);
         if(signature != null) {
@@ -214,6 +214,7 @@ public class JavaClassVisitor extends ClassVisitor {
             mySignatureReader.accept(csv);
         } else {
             if(superName != null) {
+
                 csv.visitSuperclass(superName);
             }
             if(interfaces != null) {
@@ -225,6 +226,11 @@ public class JavaClassVisitor extends ClassVisitor {
 
 
         super.visit(version, access, name, signature, superName, interfaces);
+
+        if(renamed) {
+            ShadowInterface interf2 = (ShadowInterface)TypeScriptData.INSTANCE.rootNamespace.get(interf.renamedFrom, ShadowInterface::new);
+            interf2.setRenamedTo(interf);
+        }
     }
 
 

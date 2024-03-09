@@ -35,13 +35,8 @@ public class TypeScriptData {
     }
 
     public void parse() {
-        if(namespacePrefix.isEmpty()) {
-            stringBuilder.append("type ClassLike = {\n  class: java.lang.Class<any>;\n" +
-                    "  [Symbol.hasInstance](v): boolean\n }\n");
-        } else {
-            stringBuilder.append("type ClassLike = {\n  class: ").append(namespacePrefix).append(".java.lang.Class<any>;\n" +
-                    "  [Symbol.hasInstance](v): boolean\n }\n");
-        }
+        stringBuilder.append("type ClassLike = {\n  class: ").append(namespacePrefix).append("java.lang.Class<any>;\n" +
+                "  [Symbol.hasInstance](v): boolean\n }\n");
         stringBuilder.append("""
                 type isAny<T> = (T extends never ? true : false) extends false ? false : true;
                 type CombineTypes<A> = (
@@ -89,7 +84,7 @@ public class TypeScriptData {
         if (prefix.endsWith(".")) {
             prefix = prefix.replaceAll("\\.+$", "");
         }
-        this.namespacePrefix = prefix;
+        this.namespacePrefix = prefix + ".";
         rootNamespace.name = prefix;
     }
 }

@@ -1,5 +1,6 @@
 package me.hellrevenger.jar2dts.visitor;
 
+import me.hellrevenger.jar2dts.converter.TypeScriptData;
 import me.hellrevenger.jar2dts.utils.ClassName;
 import me.hellrevenger.jar2dts.utils.Scope;
 import org.objectweb.asm.signature.SignatureReader;
@@ -163,7 +164,7 @@ public class MySignatureReader {
                         // or an inner class name. This name may already have been visited it is was followed by
                         // type arguments between '<' and '>'. If not, we need to visit it here.
                         if (!visited) {
-                            String name = Scope.reduceScope(scope, ClassName.remap(signature.substring(start, offset - 1)));
+                            String name = Scope.reduceScope(scope, TypeScriptData.INSTANCE.mapping.map(ClassName.remap(signature.substring(start, offset - 1))));
                             lastParsedType = name;
                         }
                         // If we reached the end of the ClassTypeSignature return, otherwise start the parsing
@@ -179,7 +180,7 @@ public class MySignatureReader {
                         // If a '<' is encountered, this means we have fully parsed the main class name or an
                         // inner class name, and that we now need to parse TypeArguments. First, we need to
                         // visit the parsed class name.
-                        String name = Scope.reduceScope(scope, ClassName.remap(signature.substring(start, offset - 1)));
+                        String name = Scope.reduceScope(scope, TypeScriptData.INSTANCE.mapping.map(ClassName.remap(signature.substring(start, offset - 1))));
                         visited = true;
                         StringBuilder parsedType = new StringBuilder(name + "<");
                         // Now, parse the TypeArgument(s), one at a time.

@@ -30,7 +30,7 @@ public class Interface implements AcceptTypeScriptData {
 
     public Function constructor = null;
 
-    public String renamedFrom = "";
+    public String renamedFrom = null;
 
     public String getGenerics() {
         return generics.isEmpty() ? "" : "<" + generics + ">";
@@ -54,7 +54,7 @@ public class Interface implements AcceptTypeScriptData {
     public void handleStaticPost(TypeScriptData data) {
         data.decreaseIndent().appendIndent().append("}\n");
         if(renamedFrom != null) {
-            data.appendIndent().append("/** ").append(renamedFrom).append(" */\n");
+            data.appendIndent().append("/**  @renamed-from ").append(data.namespacePrefix).append(renamedFrom).append(" */\n");
         }
         data.appendIndent().append("let ").append(name).append(": _").append(name).append("$$static").append(getGenerics()).append(";\n");
     }
@@ -90,7 +90,7 @@ public class Interface implements AcceptTypeScriptData {
 
         data.decreaseIndent().appendIndent().append("}\n");
         if(renamedFrom != null) {
-            data.appendIndent().append("/** ").append(renamedFrom).append(" */\n");
+            data.appendIndent().append("/** @renamed-from ").append(data.namespacePrefix).append(renamedFrom).append(" */\n");
         }
         data.appendIndent().append("interface ").append(name);
         handleGenerics(data);

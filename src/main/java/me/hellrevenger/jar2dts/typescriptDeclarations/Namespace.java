@@ -101,6 +101,15 @@ public class Namespace implements AcceptTypeScriptData {
         return interfaces.getOrCreate(finalName, Interface::new);
     }
 
+    public Interface get(String name, Supplier<Interface> constructor) {
+        String finalName = name;
+        if(finalName.contains(".")) {
+            int i = finalName.lastIndexOf(".");
+            return getNamespace(finalName.substring(0, i)).get(finalName.substring(i+1), constructor);
+        }
+        return interfaces.getOrCreate(finalName, constructor);
+    }
+
     public Interface getTypescriptClass(String name) {
         String finalName = name;
         if(finalName.contains(".")) {
