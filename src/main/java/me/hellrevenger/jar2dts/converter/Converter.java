@@ -29,7 +29,7 @@ public class Converter {
             var byteCode = jar.getFileData(className);
             ClassReader cr = new ClassReader(byteCode);
             JavaClassVisitor classVisitor = new JavaClassVisitor();
-            cr.accept(classVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG);
+            cr.accept(classVisitor, ClassReader.SKIP_FRAMES);
 
         }
 

@@ -28,8 +28,6 @@ public class Interface implements AcceptTypeScriptData {
 
     public boolean hasConstructor = false;
 
-    public Function constructor = null;
-
     public String renamedFrom = null;
 
     public String getGenerics() {

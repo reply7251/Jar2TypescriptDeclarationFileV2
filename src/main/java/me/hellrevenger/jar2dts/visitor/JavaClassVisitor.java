@@ -98,8 +98,7 @@ public class JavaClassVisitor extends ClassVisitor {
             return super.visitMethod(access, name, descriptor, signature, exceptions);
         }
         if(name.equals("<init>")) {
-            visitConstructor(access, name, descriptor, signature, exceptions);
-            return super.visitMethod(access, name, descriptor, signature, exceptions);
+            return visitConstructor(access, name, descriptor, signature, exceptions);
         }
 
 
@@ -137,11 +136,11 @@ public class JavaClassVisitor extends ClassVisitor {
         MySignatureReader mySignatureReader = new MySignatureReader(sign);
         mySignatureReader.accept(new MethodSignatureVisitor(self));
 
-        return super.visitMethod(access, name, descriptor, signature, exceptions);
+        return new MyMethodVisitor(self, super.visitMethod(access, name, descriptor, signature, exceptions));
     }
 
-    void visitConstructor(int access, String name, String descriptor, String signature, String[] exceptions) {
-        if((access & (Opcodes.ACC_SYNTHETIC | Opcodes.ACC_PRIVATE)) != 0) return;
+    MethodVisitor visitConstructor(int access, String name, String descriptor, String signature, String[] exceptions) {
+        if((access & (Opcodes.ACC_SYNTHETIC | Opcodes.ACC_PRIVATE)) != 0) return super.visitMethod(access, name, descriptor, signature, exceptions);
         //System.out.printf("visitMethod from %s: %s %s %s\n", lastAccessClassName,name, descriptor, signature);
         String sign = signature == null ? descriptor : signature;
         var clazz = TypeScriptData.INSTANCE.rootNamespace.getInterface(lastAccessClassName);
@@ -154,12 +153,8 @@ public class JavaClassVisitor extends ClassVisitor {
 
          */
         var selves = clazz.getFunction(methodName);
-        Function self;
-
-        //clazz.interfaces.add(lastAccessClassNameSimple + "$$constructor");
-        clazz.constructor = new Function();
-        clazz.constructor.name = methodName;
-        self = clazz.constructor;;
+        Function self = new Function();;
+        self.name = methodName;
         selves.add(self);
 
         clazz.hasConstructor = true;
@@ -175,7 +170,7 @@ public class JavaClassVisitor extends ClassVisitor {
         MySignatureReader mySignatureReader = new MySignatureReader(sign);
         mySignatureReader.accept(new MethodSignatureVisitor(self));
         self.returnType = lastAccessClassNameSimple;
-
+        return new MyMethodVisitor(self, super.visitMethod(access, name, descriptor, signature, exceptions));
     }
 
     @Override

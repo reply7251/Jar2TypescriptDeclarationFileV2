@@ -8,7 +8,6 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        System.out.println("Hello World");
         var options = new Options();
         options.parseArg("input","","", Options.OptionType.STRING, "i");
         options.parseArg("output", "output.d.ts", "", Options.OptionType.STRING, "o");
