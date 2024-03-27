@@ -7,6 +7,7 @@ import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MyMethodVisitor extends MethodVisitor {
     Function function;
@@ -22,7 +23,11 @@ public class MyMethodVisitor extends MethodVisitor {
             index2--;
         }
         if(index2 != -1 && index2 < function.parameters.size()) {
-            function.parameters.get(index2).name = name;
+            var pname = name;
+            if(pname.equals("in") || pname.equals("export")) {
+                pname = "_" + pname;
+            }
+            function.parameters.get(index2).name = pname;
         }
         super.visitLocalVariable(name, descriptor, signature, start, end, index);
     }
