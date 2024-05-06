@@ -35,8 +35,8 @@ public class Mapping {
                 continue;
             }
             //System.out.println("class_def: " + String.join(", ",class_def));
-            var from = class_def[1].replace("/",".");//.replace("$",".");
-            var to = class_def[2].replace("/",".");//.replace("$",".");
+            var from = class_def[1].replace("/",".");;
+            var to = class_def[2].replace("/",".");;
 
             var current_class = new ClassMapping(from, to);
             for(var item : clazz) {
@@ -55,12 +55,12 @@ public class Mapping {
     }
 
     public String map(String clazz, String member) {
-        clazz = clazz.replace("/",".");//.replace("$",".");
+        clazz = clazz.replace("/",".");;
         return classes.containsKey(clazz) ? classes.get(clazz).map(member) : member;
     }
 
     public String map(String clazz) {
-        clazz = clazz.replace("/",".");//.replace("$",".");
+        clazz = clazz.replace("/",".");;
         return classes.containsKey(clazz) ? classes.get(clazz).map() : clazz;
         //return clazz;
     }

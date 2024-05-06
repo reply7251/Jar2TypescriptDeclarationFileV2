@@ -9,7 +9,7 @@ public class ClassName {
     static HashMap<String, String> remapMap2 = new HashMap<>();
     static HashMap<String, String> remapMap3 = new HashMap<>();
     public static String remap(String s) {
-        s = s.replace("/",".");//.replace("$",".");
+        s = s.replace("/",".");;
         return _remap(s);
     }
 
@@ -39,16 +39,6 @@ public class ClassName {
     }
 
     static {
-        /*
-        remapMap.put("([^\\w]|^)int([^\\w]|$)","$1number$2");
-        remapMap.put("([^\\w]|^)float([^\\w]|$)","$1number$2");
-        remapMap.put("([^\\w]|^)double([^\\w]|$)","$1number$2");
-        remapMap.put("([^\\w]|^)long([^\\w]|$)","$1number$2");
-        remapMap.put("([^\\w]|^)short([^\\w]|$)","$1number$2");
-        remapMap.put("([^\\w]|^)byte([^\\w]|$)","$1number$2");
-
-         */
-
         remapMap.put("java.lang.String","string");
         remapMap.put("java.lang.Object","any");
         remapMap.put("java.lang.Number","number");

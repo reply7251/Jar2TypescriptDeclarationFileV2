@@ -1,6 +1,7 @@
 package me.hellrevenger.jar2dts.visitor;
 
 import me.hellrevenger.jar2dts.typescriptDeclarations.Function;
+import me.hellrevenger.jar2dts.utils.Lists;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -11,6 +12,8 @@ import java.util.Objects;
 
 public class MyMethodVisitor extends MethodVisitor {
     Function function;
+
+    static final List<String> keywords = Lists.from("in", "export", "function");
 
     public MyMethodVisitor(Function func, MethodVisitor methodVisitor) {
         super(Opcodes.ASM9, methodVisitor);
@@ -24,7 +27,8 @@ public class MyMethodVisitor extends MethodVisitor {
         }
         if(index2 != -1 && index2 < function.parameters.size()) {
             var pname = name;
-            if(pname.equals("in") || pname.equals("export")) {
+
+            if(keywords.contains(pname)) {
                 pname = "_" + pname;
             }
             function.parameters.get(index2).name = pname;

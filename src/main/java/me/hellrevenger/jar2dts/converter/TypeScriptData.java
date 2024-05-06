@@ -11,6 +11,8 @@ import java.util.ArrayList;
 public class TypeScriptData {
     public static final TypeScriptData INSTANCE = new TypeScriptData();
 
+    public boolean reduceScope = true;
+
     public StringBuilder stringBuilder = new StringBuilder();
     public int indent = 0;
 

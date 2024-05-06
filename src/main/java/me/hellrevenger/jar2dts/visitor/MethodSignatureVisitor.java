@@ -17,7 +17,7 @@ public class MethodSignatureVisitor implements MySignatureVisitor{
     public MySignatureVisitor visitGenerics(List<String> generics) {
 
         function.generics = generics.stream().map(x->x.contains(";")?x.substring(x.lastIndexOf(";")):x)
-                .map(x->x.replace("/",".").replace("$","."))
+                .map(x->x.replace("/","."))
                 .collect(Collectors.toList());
         return MySignatureVisitor.super.visitGenerics(generics);
     }

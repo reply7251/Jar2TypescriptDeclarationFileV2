@@ -15,6 +15,7 @@ public class Main {
         options.parseArg("help", "", "help", Options.OptionType.BOOL, "h");
         options.parseArg("mapping", "", "mapping", Options.OptionType.STRING, "m");
         options.parseArg("mapping2", "", "mapping2", Options.OptionType.STRING, "m2");
+        options.parseArg("noReduce", "true", "mapping2", Options.OptionType.BOOL, "n");
 
         options.parse(args);
         var mapping = options.get("mapping");
@@ -34,6 +35,7 @@ public class Main {
         TypeScriptData.INSTANCE.setPrefix(options.get("prefix").value());
         TypeScriptData.INSTANCE.inputFile = options.get("input").value();
         TypeScriptData.INSTANCE.outputFile = options.get("output").value();
+        TypeScriptData.INSTANCE.reduceScope = options.get("noReduce").value().equals("true");
 
         if(TypeScriptData.INSTANCE.inputFile.equals("")) {
             System.out.println("-i inputFile -o outputFile -p prefix");

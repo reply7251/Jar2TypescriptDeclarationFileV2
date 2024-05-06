@@ -1,11 +1,16 @@
 package me.hellrevenger.jar2dts.utils;
 
+import me.hellrevenger.jar2dts.converter.TypeScriptData;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class Scope {
     public static String reduceScope(String scope, String target) {
         target = target.replaceAll("/",".");
+        if(!TypeScriptData.INSTANCE.reduceScope) {
+            return target;
+        }
 
         String[] scopes1 = scope.split("\\.");
         String[] scopes2 = target.split("\\.");

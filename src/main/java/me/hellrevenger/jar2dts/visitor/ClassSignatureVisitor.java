@@ -19,7 +19,7 @@ public class ClassSignatureVisitor implements MySignatureVisitor {
     public MySignatureVisitor visitGenerics(List<String> generics) {
         interf.generics = generics.stream().map(x->x.contains(";")?x.substring(x.lastIndexOf(";")):x)
                 .collect(Collectors.joining(","))
-                .replace("/",".").replace("$",".");
+                .replace("/",".");
         return this;
     }
 
