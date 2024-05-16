@@ -13,7 +13,7 @@ import java.util.Objects;
 public class MyMethodVisitor extends MethodVisitor {
     Function function;
 
-    static final List<String> keywords = Lists.from("in", "export", "function");
+    static final List<String> keywords = Lists.from("in", "export", "function", "var", "let");
 
     public MyMethodVisitor(Function func, MethodVisitor methodVisitor) {
         super(Opcodes.ASM9, methodVisitor);

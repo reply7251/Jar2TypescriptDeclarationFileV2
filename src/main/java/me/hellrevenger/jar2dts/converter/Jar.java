@@ -4,9 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.jar.JarFile;
 
 public class Jar extends JarFile{
+    List<String> classesCache = null;
+
     public Jar(String name) throws IOException {
         super(name);
     }
@@ -15,16 +20,20 @@ public class Jar extends JarFile{
         super(file);
     }
 
-    public ArrayList<String> getClasses() {
-        ArrayList<String> classes = new ArrayList<>();
+    public List<String> getClasses() {
+        if(classesCache != null) {
+            return classesCache;
+        }
+        classesCache = new ArrayList<>();
+
         var entries = this.entries();
         while (entries.hasMoreElements()) {
             var entry = entries.nextElement();
             if (!entry.isDirectory() && entry.getName().endsWith(".class") && !entry.getName().contains("-")) {
-                classes.add(entry.getName());
+                classesCache.add(entry.getName());
             }
         }
-        return classes;
+        return classesCache;
     }
 
     public byte[] getFileData(String filename) throws IOException {

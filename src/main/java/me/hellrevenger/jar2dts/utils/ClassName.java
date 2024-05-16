@@ -38,6 +38,10 @@ public class ClassName {
         return s;
     }
 
+    public static boolean isPrimitiveType(String type) {
+        return remapMap.containsValue(type);
+    }
+
     static {
         remapMap.put("java.lang.String","string");
         remapMap.put("java.lang.Object","any");
@@ -54,7 +58,5 @@ public class ClassName {
         remapMap2.put("\\? extends ","");
         remapMap2.put("\\.\\d+",".");
         remapMap3.put("<[^<]+?>\\.",".");
-
-
     }
 }

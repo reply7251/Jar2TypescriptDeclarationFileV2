@@ -15,6 +15,23 @@ public class Scope {
         String[] scopes1 = scope.split("\\.");
         String[] scopes2 = target.split("\\.");
 
+        if(scopes2.length == 1 && scopes1.length > 1 && !ClassName.isPrimitiveType(target)) {
+            if(scope.endsWith("$" + target)) {
+                return scopes1[scopes1.length-1];
+            }
+            for(var className : TypeScriptData.INSTANCE.jar.getClasses()) {
+                className = className.substring(0, className.length() - 6).replace("/",".");
+                var index = className.lastIndexOf(".");
+                if(!className.substring(0, index).equals(scope.substring(0, scope.lastIndexOf(".")))) {
+                    continue;
+                }
+                if(className.endsWith("$" + target)) {
+                    return className.substring(index+1);
+                }
+            }
+            return scopes1[scopes1.length-1] + "$" + target;
+        }
+
 
         int len = Math.min(scopes1.length, scopes2.length-1);//Math.min(scope.length(), Math.max(target.lastIndexOf("."), 0));
 

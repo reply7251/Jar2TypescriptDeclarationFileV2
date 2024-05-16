@@ -75,8 +75,7 @@ public class JavaClassVisitor extends ClassVisitor {
 
         self.isStatic = (access & Opcodes.ACC_STATIC) != 0;
         self.isReadonly = (access & Opcodes.ACC_FINAL) != 0;
-        self.isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
-        self.isProtected = (access & Opcodes.ACC_PROTECTED) != 0;
+        self.isPrivate = (access & Opcodes.ACC_PUBLIC) == 0;
 
         if(!originalName.equals(fieldName)) {
             self.renamedFrom = originalName;
@@ -122,12 +121,11 @@ public class JavaClassVisitor extends ClassVisitor {
         var self = new Function();
         selves.add(self);
 
-        self.scope = lastAccessPackage;
+        self.scope = lastAccessClassName;
 
         self.name = methodName;
         self.isStatic = (access & Opcodes.ACC_STATIC) != 0;
-        self.isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
-        self.isProtected = (access & Opcodes.ACC_PROTECTED) != 0;
+        self.isPrivate = (access & Opcodes.ACC_PUBLIC) == 0;
 
         if(!originalName.equals(methodName)) {
             self.renamedFrom = originalName;
@@ -159,12 +157,11 @@ public class JavaClassVisitor extends ClassVisitor {
 
         clazz.hasConstructor = true;
 
-        self.scope = lastAccessPackage;
+        self.scope = lastAccessClassName;
 
         self.name = methodName;
         //self.isStatic = true;
-        self.isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
-        self.isProtected = (access & Opcodes.ACC_PROTECTED) != 0;
+        self.isPrivate = (access & Opcodes.ACC_PUBLIC) == 0;
         self.isConstructor = true;
 
         MySignatureReader mySignatureReader = new MySignatureReader(sign);

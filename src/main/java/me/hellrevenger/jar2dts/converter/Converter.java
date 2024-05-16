@@ -24,6 +24,7 @@ public class Converter {
             return;
         }
         var jar = new Jar(TypeScriptData.INSTANCE.inputFile);
+        TypeScriptData.INSTANCE.jar = jar;
         List<String> classNames = jar.getClasses();
         for(var className : classNames) {
             var byteCode = jar.getFileData(className);
