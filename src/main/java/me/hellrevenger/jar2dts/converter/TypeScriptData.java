@@ -7,6 +7,7 @@ import me.hellrevenger.jar2dts.typescriptDeclarations.Variable;
 import me.hellrevenger.jar2dts.utils.DefaultMap;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class TypeScriptData {
     public static final TypeScriptData INSTANCE = new TypeScriptData();
@@ -35,6 +36,8 @@ public class TypeScriptData {
     public Mapping mapping = new Mapping();
     public Mapping mapping2 = new Mapping();
 
+    public final HashSet<Namespace> toRedo = new HashSet<>();
+
     public TypeScriptData() {
     }
 
@@ -61,8 +64,10 @@ public class TypeScriptData {
                 type long   = number | BigInt;
                 type float  = number & {};
                 type double = number & {};
+                type Function$$JS = Function;
                 """);
         rootNamespace.accept(this);
+        toRedo.forEach(namespace -> namespace.redo(this));
     }
 
     public Namespace getNamespace(String name) {

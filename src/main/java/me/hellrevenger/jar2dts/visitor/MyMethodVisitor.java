@@ -9,15 +9,24 @@ import org.objectweb.asm.Opcodes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class MyMethodVisitor extends MethodVisitor {
     Function function;
 
-    static final List<String> keywords = Lists.from("in", "export", "function", "var", "let");
+    BiConsumer<Integer, String> callback;
+
+    static final List<String> keywords = Lists.from("in", "export", "function", "var", "let", "with");
 
     public MyMethodVisitor(Function func, MethodVisitor methodVisitor) {
+        this(func, methodVisitor, null);
+    }
+
+    public MyMethodVisitor(Function func, MethodVisitor methodVisitor, BiConsumer<Integer, String> callback) {
         super(Opcodes.ASM9, methodVisitor);
         function = func;
+        this.callback = callback;
     }
     @Override
     public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
@@ -32,6 +41,9 @@ public class MyMethodVisitor extends MethodVisitor {
                 pname = "_" + pname;
             }
             function.parameters.get(index2).name = pname;
+            if(callback != null) {
+                callback.accept(index2, pname);
+            }
         }
         super.visitLocalVariable(name, descriptor, signature, start, end, index);
     }

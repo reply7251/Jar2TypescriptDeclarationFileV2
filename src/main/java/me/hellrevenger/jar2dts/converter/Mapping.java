@@ -1,9 +1,6 @@
 package me.hellrevenger.jar2dts.converter;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -13,10 +10,15 @@ public class Mapping {
     public final HashMap<String, ClassMapping> classes = new HashMap<>();
 
     public void parse(File file) throws FileNotFoundException {
-        Scanner scanner = new Scanner(file);
         StringBuilder contentBuilder = new StringBuilder();
-        while (scanner.hasNextLine()) {
-            contentBuilder.append(scanner.nextLine()).append("\n");
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line;
+        try {
+            while((line = reader.readLine()) != null) {
+                contentBuilder.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         String content = contentBuilder.toString();
@@ -41,6 +43,7 @@ public class Mapping {
             var current_class = new ClassMapping(from, to);
             for(var item : clazz) {
                 if(String.join("",item).isEmpty()) continue;
+                //System.out.println("item: " + String.join(", ",item));
                 switch (item[1]) {
                     case "m":
                     case "f":

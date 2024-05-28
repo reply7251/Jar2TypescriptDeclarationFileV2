@@ -4,18 +4,26 @@ import me.hellrevenger.jar2dts.converter.TypeScriptData;
 import me.hellrevenger.jar2dts.typescriptDeclarations.Function;
 import me.hellrevenger.jar2dts.typescriptDeclarations.Interface;
 import me.hellrevenger.jar2dts.typescriptDeclarations.ShadowInterface;
+import me.hellrevenger.jar2dts.typescriptDeclarations.Variable;
 import me.hellrevenger.jar2dts.utils.ClassName;
 import me.hellrevenger.jar2dts.utils.Lists;
 import me.hellrevenger.jar2dts.utils.Scope;
 import org.objectweb.asm.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class JavaClassVisitor extends ClassVisitor {
     String lastAccessClassName;
     String lastAccessClassNameSimple;
     String lastAccessPackage;
+
+    int abstractMethods = 0;
+
+    Function lastAbstractFunction = null;
 
     boolean unnecessary = false;
 
@@ -126,6 +134,16 @@ public class JavaClassVisitor extends ClassVisitor {
         self.name = methodName;
         self.isStatic = (access & Opcodes.ACC_STATIC) != 0;
         self.isPrivate = (access & Opcodes.ACC_PUBLIC) == 0;
+        self.hasVarArg = (access & Opcodes.ACC_VARARGS) != 0;
+        if((access & Opcodes.ACC_ABSTRACT) != 0) {
+            abstractMethods++;
+            if(abstractMethods == 1) {
+                self.isFunctionalInterfaceMethod = true;
+            } else {
+                lastAbstractFunction.isFunctionalInterfaceMethod = false;
+            }
+            lastAbstractFunction = self;
+        }
 
         if(!originalName.equals(methodName)) {
             self.renamedFrom = originalName;
@@ -163,10 +181,12 @@ public class JavaClassVisitor extends ClassVisitor {
         //self.isStatic = true;
         self.isPrivate = (access & Opcodes.ACC_PUBLIC) == 0;
         self.isConstructor = true;
+        self.hasVarArg = (access & Opcodes.ACC_VARARGS) != 0;
 
         MySignatureReader mySignatureReader = new MySignatureReader(sign);
         mySignatureReader.accept(new MethodSignatureVisitor(self));
-        self.returnType = lastAccessClassNameSimple;
+        self.returnType = lastAccessClassNameSimple + clazz.getGenerics();
+
         return new MyMethodVisitor(self, super.visitMethod(access, name, descriptor, signature, exceptions));
     }
 
@@ -218,7 +238,6 @@ public class JavaClassVisitor extends ClassVisitor {
 
 
         super.visit(version, access, name, signature, superName, interfaces);
-
         if(renamed) {
             ShadowInterface interf2 = (ShadowInterface)TypeScriptData.INSTANCE.rootNamespace.get(interf.renamedFrom, ShadowInterface::new);
             interf2.setRenamedTo(interf);

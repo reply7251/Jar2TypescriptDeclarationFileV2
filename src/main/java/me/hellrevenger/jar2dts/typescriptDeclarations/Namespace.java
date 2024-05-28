@@ -47,7 +47,8 @@ public class Namespace implements AcceptTypeScriptData {
     public void accept(TypeScriptData data) {
         if(name.equals("function")) {
             modified = "function";
-            name = "\"function\"";
+            name = "_function";
+            data.toRedo.add(this);
         }
         data.appendIndent();
         if(name.isEmpty()) {
@@ -66,6 +67,17 @@ public class Namespace implements AcceptTypeScriptData {
 
         acceptMembers(data);
 
+        data.decreaseIndent();
+        data.appendIndent();
+        data.stringBuilder.append("}\n");
+    }
+
+    public void redo(TypeScriptData data) {
+        data.appendIndent();
+        data.stringBuilder.append("declare ").append("module ").append(scope.substring(1)).append(" {\n");
+        data.increaseIndent();
+        data.appendIndent();
+        data.stringBuilder.append("export { ").append(name).append(" as ").append(modified).append("};");
         data.decreaseIndent();
         data.appendIndent();
         data.stringBuilder.append("}\n");
